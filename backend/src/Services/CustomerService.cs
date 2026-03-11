@@ -30,4 +30,12 @@ public class CustomerService : ICustomerService
 
     public Task<int> GetCountAsync()
         => Task.FromResult(_customers.Count(c => !c.IsDeleted));
+
+    public Task<(IEnumerable<Customer> Customers, bool Truncated)> ExportAsync(int maxRows = 10_000)
+    {
+        var active = _customers.Where(c => !c.IsDeleted).ToList();
+        var truncated = active.Count > maxRows;
+        var result = truncated ? active.Take(maxRows) : active;
+        return Task.FromResult<(IEnumerable<Customer>, bool)>((result, truncated));
+    }
 }
