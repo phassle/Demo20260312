@@ -37,6 +37,10 @@ demo/
 - Frontend runs on `http://localhost:3000`, proxies `/api` → `http://localhost:5000`
 - After fresh clone / env rebuild: verify `frontend/vite.config.ts` proxy target is `http://localhost:5000`
 - Start order: backend first, then frontend
+- Before starting: kill any existing processes on ports 5000 and 3000 separately (macOS `lsof` stöder inte flera portar med kolon-syntax):
+  ```
+  lsof -ti :5000 | xargs kill -9 2>/dev/null; lsof -ti :3000 | xargs kill -9 2>/dev/null; true
+  ```
 
 ## Git strategy
 - Branch naming: `feature/YT-{ID}-{short-title}`
