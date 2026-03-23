@@ -26,7 +26,7 @@ public class CustomerService : ICustomerService
             _customers.Where(c => !c.IsDeleted).ToList());
 
     public Task<Customer?> GetByIdAsync(int id)
-        => Task.FromResult(_customers.FirstOrDefault(c => c.Id == id));
+        => Task.FromResult(_customers.FirstOrDefault(c => c.Id == id && !c.IsDeleted));
 
     public Task<int> GetCountAsync()
         => Task.FromResult(_customers.Count(c => !c.IsDeleted));
