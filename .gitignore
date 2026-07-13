@@ -17,3 +17,5 @@ frontend/.vite/
 # Logs
 *.log
 logs/
+.claude/worktrees/
+backend/.idea/
