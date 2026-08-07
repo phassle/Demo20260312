@@ -31,6 +31,24 @@ public class CustomerServiceTests
     }
 
     [Fact]
+    public async Task GetByIdAsync_DeletedCustomer_ReturnsNull()
+    {
+        var customer = await _sut.GetByIdAsync(2);
+        Assert.NotNull(customer);
+
+        try
+        {
+            customer.IsDeleted = true;
+            var deleted = await _sut.GetByIdAsync(2);
+            Assert.Null(deleted);
+        }
+        finally
+        {
+            customer!.IsDeleted = false;
+        }
+    }
+
+    [Fact]
     public async Task GetCountAsync_Returns50()
     {
         var count = await _sut.GetCountAsync();
