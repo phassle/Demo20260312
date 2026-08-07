@@ -1,3 +1,4 @@
+using CompanyX.Demo.Models;
 using CompanyX.Demo.Services;
 using Xunit;
 
@@ -5,12 +6,11 @@ namespace CompanyX.Demo.Tests;
 
 public class CustomerServiceTests
 {
-    private readonly CustomerService _sut = new();
-
     [Fact]
     public async Task GetAllAsync_ReturnsNonDeletedCustomers()
     {
-        var customers = await _sut.GetAllAsync();
+        var sut = new CustomerService();
+        var customers = await sut.GetAllAsync();
         Assert.NotEmpty(customers);
         Assert.All(customers, c => Assert.False(c.IsDeleted));
     }
@@ -18,7 +18,8 @@ public class CustomerServiceTests
     [Fact]
     public async Task GetByIdAsync_ExistingId_ReturnsCustomer()
     {
-        var customer = await _sut.GetByIdAsync(1);
+        var sut = new CustomerService();
+        var customer = await sut.GetByIdAsync(1);
         Assert.NotNull(customer);
         Assert.Equal(1, customer.Id);
     }
@@ -26,14 +27,37 @@ public class CustomerServiceTests
     [Fact]
     public async Task GetByIdAsync_NonExistingId_ReturnsNull()
     {
-        var customer = await _sut.GetByIdAsync(9999);
+        var sut = new CustomerService();
+        var customer = await sut.GetByIdAsync(9999);
         Assert.Null(customer);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_DeletedCustomer_ReturnsNull()
+    {
+        var sut = new CustomerService();
+
+        // Arrange: Get a customer and soft-delete it
+        var customers = await sut.GetAllAsync();
+        var testCustomer = customers.First();
+        var testId = testCustomer.Id;
+        testCustomer.IsDeleted = true;
+
+        // Act: try to retrieve the deleted customer
+        var customer = await sut.GetByIdAsync(testId);
+
+        // Assert: should return null (404) for consistency with GetAllAsync
+        Assert.Null(customer);
+
+        // Cleanup: restore state for other tests
+        testCustomer.IsDeleted = false;
     }
 
     [Fact]
     public async Task GetCountAsync_Returns50()
     {
-        var count = await _sut.GetCountAsync();
+        var sut = new CustomerService();
+        var count = await sut.GetCountAsync();
         Assert.Equal(50, count);
     }
 
